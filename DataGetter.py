@@ -5,7 +5,7 @@ def get_top_repositories():
     url = "https://api.github.com/graphql"
 
     headers = {
-        "Authorization": "Bearer YOUR_GITHUB_ACCESS_TOKEN",
+        "Authorization": "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",
     }
 
     query = """
