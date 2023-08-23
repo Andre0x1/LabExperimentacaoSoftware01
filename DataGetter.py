@@ -6,7 +6,7 @@ def get_repositories():
     url = "https://api.github.com/graphql"
 
     headers = {
-        'Authorization': "token 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",
+        'Authorization': "token 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",
     }
 
     query = """
@@ -55,7 +55,7 @@ def get_repositories():
 
     cursor = None
     count =  0
-    while count<10:
+    while count<100:
         response = requests.post(url, json={"query": query, "variables": {"cursor": cursor}}, headers=headers)
 
         if response.status_code == 200:
@@ -65,6 +65,7 @@ def get_repositories():
                 repositories.extend(search_result.get("nodes", []))
                 page_info = search_result.get("pageInfo", {})
                 count += 1
+                print((count*100)/10,"%")
                 if page_info.get("hasNextPage"):
                     cursor = page_info.get("endCursor")
                 else:
