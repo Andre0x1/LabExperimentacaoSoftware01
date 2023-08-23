@@ -2,11 +2,11 @@ import requests
 import json
 import time
 
-def get_top_repositories():
+def get_repositories():
     url = "https://api.github.com/graphql"
 
     headers = {
-        'Authorization': "token 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",
+        'Authorization': "token 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",
     }
 
     query = """
@@ -68,18 +68,18 @@ def get_top_repositories():
                 if page_info.get("hasNextPage"):
                     cursor = page_info.get("endCursor")
                 else:
-                    break  # No more pages
+                    break  
             except json.JSONDecodeError as e:
                 print(f"JSON decoding error: {e}")
         else:
             print(f"Request failed with status code {response.status_code}. Retrying in 10 minutes...")
-            time.sleep(60)  # Pause for 10 minutes before retrying
+            time.sleep(60)  
 
     return repositories
 
 
 if __name__ == "__main__":
-    top_repositories = get_top_repositories()
+    data = get_repositories()
 
-    with open("top_repositories.json", "w") as json_file:
-        json.dump(top_repositories, json_file, indent=4)
+    with open("data.json", "w") as json_file:
+        json.dump(data, json_file, indent=4)
