@@ -1,12 +1,13 @@
 import requests
 import json
 import time
+import csv
 
 def get_repositories():
     url = "https://api.github.com/graphql"
 
     headers = {
-        'Authorization': "token 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",
+        'Authorization': "token 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",
     }
 
     query = """
@@ -65,22 +66,49 @@ def get_repositories():
                 repositories.extend(search_result.get("nodes", []))
                 page_info = search_result.get("pageInfo", {})
                 count += 1
-                print((count*100)/10,"%")
+                print((count*100)/100,"%")
                 if page_info.get("hasNextPage"):
                     cursor = page_info.get("endCursor")
                 else:
                     break  
             except json.JSONDecodeError as e:
-                print(f"JSON decoding error: {e}")
+                print(f"JSON error: {e}")
         else:
-            print(f"Request failed with status code {response.status_code}. Retrying in 10 minutes...")
-            time.sleep(60)  
+            print(f"Erro: status code {response.status_code}...")
+            time.sleep(60) 
+        
+    with open("data_1000.json", "w") as json_file:
+        json.dump(repositories, json_file, indent=4)
 
-    return repositories
+def get_info():
+    with open('data.json', 'r') as json_file:
+        data = json.load(json_file)
 
+
+    with open('repos.csv', 'w', newline='', encoding='utf-8') as csv_file:
+        fieldnames = ['nome_repo', 'n_estrelas', 'd_criacao', 'd_atualizacao', 'n_releases', 'linguagem', 'n_issues', 'n_issues_fechadas', 'n_pull_requests']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        
+
+        writer.writeheader()
+
+
+        for repo in data:
+            writer.writerow({
+                'nome_repo': repo['nameWithOwner'],
+                'n_estrelas': repo['stargazers']['totalCount'],
+                'd_criacao': repo['createdAt'],
+                'd_atualizacao': repo['updatedAt'],
+                'n_releases': repo['releases']['totalCount'],
+                'linguagem': repo['primaryLanguage']['name'] if repo['primaryLanguage'] else '',
+                'n_issues': repo['issues']['totalCount'],
+                'n_issues_fechadas': repo['issuesClosed']['totalCount'],
+                'n_pull_requests': repo['defaultBranchRef']['target']['history']['totalCount']
+            })
+
+    print("Dados salvos no arquivo CSV.")
 
 if __name__ == "__main__":
-    data = get_repositories()
+    ##get_repositories()
+    get_info()
 
-    with open("data.json", "w") as json_file:
-        json.dump(data, json_file, indent=4)
