@@ -123,6 +123,6 @@ def get_info():
     print("Dados salvos no arquivo CSV.")
 
 if __name__ == "__main__":
-    ##get_repositories()
+    get_repositories()
     get_info()
 
